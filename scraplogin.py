@@ -2,13 +2,14 @@ import requests
 from lxml import html
 import logging
 
-login_url = "https://ezakupy.tesco.pl/groceries/pl-PL/login"
-URL = "https://ezakupy.tesco.pl/groceries/pl-PL/shop/napoje/napoje-gazowane/cola"
+LOGIN_URL = "https://ezakupy.tesco.pl/groceries/pl-PL/login"
+SCRAP_URL = "https://ezakupy.tesco.pl/groceries/pl-PL/shop/napoje/napoje-gazowane/cola"
+
 
 def main():
     sesssion_requests = requests.Session()
 
-    result = sesssion_requests.get(login_url)
+    result = sesssion_requests.get(LOGIN_URL)
 
     tree = html.fromstring(result.text)
     authenticity_token = list(set(tree.xpath("//input[@name='_csrf']/@value")))[0]
@@ -18,9 +19,9 @@ def main():
         "_csrf": authenticity_token
     }
 
-    sesssion_requests.post(login_url, data=payload, headers=dict(referer=login_url))
+    sesssion_requests.post(LOGIN_URL, data=payload, headers=dict(referer=LOGIN_URL))
 
-    result = sesssion_requests.get(URL, headers=dict(referer=URL))
+    result = sesssion_requests.get(SCRAP_URL, headers=dict(referer=SCRAP_URL))
 
     tree = html.fromstring(result.content)
     names = tree.xpath("//*[@id='content']/div/div/div[1]/div[1]/ul/li[1]/div/text()")
