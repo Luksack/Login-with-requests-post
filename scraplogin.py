@@ -23,23 +23,25 @@ def main():
     # data = dump.dump_all(dupa)
     # print(data.decode('utf-8'))
 
-    body = {
+    body = [{
         "id": "2003006799334",
-        "newValue": "0",
+        "newValue": "1",
         "oldValue": "0",
-        "oldUnitChoice": "pcs",
-        "newUnitChoice": "pcs"
-
-    }
+        "newUnitChoice": "pcs",
+        "oldUnitChoice": "pcs"
+    }]
 
     headers = {
         "accept": "application/json",
         "x-csrf-token": "Q2cQC2Xf-OUk4BP5aBf34UPzWBbxiy5Wrwo8",
         "content-type": "application/json",
+        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36"
     }
-    ref = "https://ezakupy.tesco.pl/groceries/pl-PL/shop/napoje/napoje-gazowane/cola"
+
     req_url = "https://ezakupy.tesco.pl/groceries/pl-PL/trolley/items?_method=PUT"
-    sesssion_requests.put(req_url, data=json.dumps(body), headers=headers)
+    job = sesssion_requests.put(req_url, data=json.dumps(body), headers=headers)
+    data = dump.dump_all(job)
+    print(data.decode('utf-8'))
 
     result = sesssion_requests.get(SCRAP_URL, headers=dict(referer=SCRAP_URL))
     tree = html.fromstring(result.content)
