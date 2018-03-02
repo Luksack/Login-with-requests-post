@@ -1,31 +1,50 @@
 import requests
 from lxml import html
 import logging
+from requests_toolbelt.utils import dump
 
 LOGIN_URL = "https://ezakupy.tesco.pl/groceries/pl-PL/login"
 SCRAP_URL = "https://ezakupy.tesco.pl/groceries/pl-PL/shop/napoje/napoje-gazowane/cola"
+import json
 
 
 def main():
     sesssion_requests = requests.Session()
 
     result = sesssion_requests.get(LOGIN_URL)
-
     tree = html.fromstring(result.text)
     authenticity_token = list(set(tree.xpath("//input[@name='_csrf']/@value")))[0]
     payload = {
-        "email": "mail",
-        "password": "pass",
+        "email": "sir.wons@gmail.com",
+        "password": "radziogej1",
         "_csrf": authenticity_token
     }
+    dupa = sesssion_requests.post(LOGIN_URL, data=payload, headers=dict(referer=LOGIN_URL))
+    # data = dump.dump_all(dupa)
+    # print(data.decode('utf-8'))
 
-    sesssion_requests.post(LOGIN_URL, data=payload, headers=dict(referer=LOGIN_URL))
+    body = {
+        "id": "2003006799334",
+        "newValue": "0",
+        "oldValue": "0",
+        "oldUnitChoice": "pcs",
+        "newUnitChoice": "pcs"
+
+    }
+
+    headers = {
+        "accept": "application/json",
+        "x-csrf-token": "Q2cQC2Xf-OUk4BP5aBf34UPzWBbxiy5Wrwo8",
+        "content-type": "application/json",
+    }
+    ref = "https://ezakupy.tesco.pl/groceries/pl-PL/shop/napoje/napoje-gazowane/cola"
+    req_url = "https://ezakupy.tesco.pl/groceries/pl-PL/trolley/items?_method=PUT"
+    sesssion_requests.put(req_url, data=json.dumps(body), headers=headers)
 
     result = sesssion_requests.get(SCRAP_URL, headers=dict(referer=SCRAP_URL))
-
     tree = html.fromstring(result.content)
-    names = tree.xpath("//*[@id='content']/div/div/div[1]/div[1]/ul/li[1]/div/text()")
-    print(names)
+    cart_cash = tree.xpath("//*[@id='mini-trolley']/div[1]/a/div/div[1]/div/div/span/span[1]/text()")
+    print(cart_cash)
 
 
 if __name__ == '__main__':
