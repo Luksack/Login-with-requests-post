@@ -15,8 +15,8 @@ def main():
     tree = html.fromstring(result.text)
     authenticity_token = list(set(tree.xpath("//input[@name='_csrf']/@value")))[0]
     payload = {
-        "email": "sir.wons@gmail.com",
-        "password": "radziogej1",
+        "email": "mail",
+        "password": "pass",
         "_csrf": authenticity_token
     }
     dupa = sesssion_requests.post(LOGIN_URL, data=payload, headers=dict(referer=LOGIN_URL))
